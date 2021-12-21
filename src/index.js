@@ -7,6 +7,8 @@ const app = express()
 
 app.use(express.json())
 
+app.use('/static', express.static(__dirname + 'public'))
+
 app.set('view engine', 'ejs')
 
 app.get('/', (req, res) => {
