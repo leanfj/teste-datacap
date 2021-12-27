@@ -28,9 +28,12 @@
         <div class="row">
 
             <% if(trackingcode !== ''){ %>
-                <p>Tracking Code consultado <strong>
-                        <%= trackingcode %>
-                    </strong></p>
+                <p>Tracking Code consultado 
+                    <strong>
+                        <a href="/consulta-envio?trackingcode=<%= trackingcode %>"><%= trackingcode %></a>
+                        
+                    </strong>
+                </p>
 
                 <ul>
                     <% dados.forEach(function(dados) { %>
