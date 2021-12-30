@@ -1,58 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('../partials/head'); %>
+    <link rel="stylesheet" href="/css/envio.css">
+    </head>
+    <%- include('../partials/header'); %>
 
-<head>
-    <%- include('../partials/head'); %>
-</head>
+        <main>
+            <div class="row">
+                <form action="/upload-waterfile" method="POST" enctype="multipart/form-data" id="formWaterFile">
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="inputWaterFile" name="waterFile">
+                        <label class="input-group-text" for="inputGroupFile01">Fila de água</label>
+                        <button type="submit" class="btn btn-primary">
+                            Enviar
+                        </button>
+                    </div>
+                </form>
+                <form action="/upload-eletrofile" method="POST" enctype="multipart/form-data" id="formEletroFile">
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="inputEletroFile" name="eletroFile">
+                        <label class="input-group-text" for="inputGroupFile01">Fila de eletro</label>
+                        <button type="submit" class="btn btn-primary">
+                            Enviar
+                        </button>
+                    </div>
+                </form>
+                <form action="/upload-servicefile" method="POST" enctype="multipart/form-data" id="formServiceFile">
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="inputServiceFile" name="serviceFile">
+                        <label class="input-group-text" for="inputGroupFile01">Fila de telefonia</label>
+                        <button type="submit" class="btn btn-primary">
+                            Enviar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="row" id="result">
+                
+            </div>
+        </main>
 
-<body>
-    <div class="container">
-        <h1>Teste DataCap</h1>
 
-        <header>
-            <%- include('../partials/header'); %>
-        </header>
-        
-        <div class="row">
-            <form action="/upload" method="POST" enctype="multipart/form-data">
-                <div class="input-group mb-3">
-                    <input type="file" class="form-control" id="inputGroupFile01" name="avatar">
-                    <label class="input-group-text" for="inputGroupFile01">Fila de água</label>
-                    <button type="submit" class="btn btn-primary">
-                        Enviar
-                    </button>
-                </div>
-            </form>
-            <form action="/" method="POST" enctype="multipart/form-data">
-                <div class="input-group mb-3">
-                    <input type="file" class="form-control" id="inputGroupFile01" name="avatar">
-                    <label class="input-group-text" for="inputGroupFile01">Fila de eletro</label>
-                    <button type="submit" class="btn btn-primary">
-                        Enviar
-                    </button>
-                </div>
-            </form>
-            <form action="/" method="POST" enctype="multipart/form-data">
-                <div class="input-group mb-3">
-                    <input type="file" class="form-control" id="inputGroupFile01" name="avatar">
-                    <label class="input-group-text" for="inputGroupFile01">Fila de telefonia</label>
-                    <button type="submit" class="btn btn-primary">
-                        Enviar
-                    </button>
-                </div>
-            </form>
-        </div>
-        
-    </div>
-
-    <footer>
         <%- include('../partials/footer'); %>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-        crossorigin="anonymous"></script>
-</body>
-
-</html>
-
