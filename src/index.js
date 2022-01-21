@@ -114,5 +114,12 @@ app.post('/upload-servicefile', upload.single('serviceFile'), (req, res) => {
     )
 
 })
+
+
+app.post('/receive-data', (req, res) => {
+    console.log(req.body)
+    res.send(req.body)
+})
+
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Rodando em http://localhost:${PORT}`))
