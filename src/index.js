@@ -120,14 +120,14 @@ app.post('/receive-data', (req, res) => {
 
     async function main(){
 
-        const uri = process.env.MONGODB_URI || "mongodb+srv://leanfj:leanfj@cluster0.yjweh.mongodb.net/teste-datacap?retryWrites=true&w=majority";
+        const uri = process.env.MONGODB_URI;
 
         const client = new MongoClient(uri);
     
         try {
             await client.connect();
     
-            const result = await createListing(client,
+            const result = await createData(client,
                 req.body
             );
 
@@ -144,8 +144,8 @@ app.post('/receive-data', (req, res) => {
     main().catch(console.error);
     
 
-    async function createListing(client, newListing){
-        const result = await client.db("sample_airbnb").collection("listingsAndReviews").insertOne(newListing);
+    async function createData(client, newListing){
+        const result = await client.db("readData").collection(newListing.layoutName).insertOne(newListing);
         console.log(`Created id: ${result.insertedId}`);
     }
 
