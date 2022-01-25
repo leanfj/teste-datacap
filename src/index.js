@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const multer = require('multer')
 const axios = require('axios');
@@ -114,7 +116,6 @@ app.post('/upload-servicefile', upload.single('serviceFile'), (req, res) => {
     )
 
 })
-
 
 app.post('/receive-data', (req, res) => {
 
