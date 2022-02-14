@@ -152,5 +152,41 @@ app.post('/receive-data', (req, res) => {
 
 })
 
+
+app.post('/receive-vivo-data', (req, res) => {
+
+    async function main(){
+
+        const uri = process.env.MONGODB_URI;
+
+        const client = new MongoClient(uri);
+    
+        try {
+            await client.connect();
+    
+            const result = await createData(client,
+                req.body
+            );
+
+            res.send(result)
+
+      
+           
+        } finally {
+            // Close the connection to the MongoDB cluster
+            await client.close();
+        }
+    }
+    
+    main().catch(console.error);
+    
+
+    async function createData(client, newListing){
+        const result = await client.db("readData").collection(newListing.documentName).insertOne(newListing);
+        console.log(`Created id: ${result.insertedId}`);
+    }
+
+})
+
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Rodando em http://localhost:${PORT}`))
