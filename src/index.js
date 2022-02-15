@@ -2,11 +2,11 @@ require('dotenv').config()
 
 const express = require('express')
 const multer = require('multer')
-const axios = require('axios');
-const path = require('path');
+const axios = require('axios')
+const path = require('path')
 const FromData = require('form-data')
 const fs = require('fs')
-const {MongoClient} = require('mongodb');
+const {MongoClient} = require('mongodb')
 
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
@@ -58,7 +58,7 @@ app.post('/upload-eletrofile', upload.single('eletroFile'), (req, res) => {
 
     const form = new FromData()
 
-    form.append('my_file', fs.createReadStream(path.resolve(__dirname, '..', 'uploads', req.file.originalname)));
+    form.append('my_file', fs.createReadStream(path.resolve(__dirname, '..', 'uploads', req.file.originalname)))
 
     axios.post('http://lis.leega.com.br/Emissor/2/TipoDocumento/2/Upload/1', form, {
         headers: {
@@ -79,7 +79,7 @@ app.post('/upload-waterfile', upload.single('waterFile'), (req, res) => {
 
     const form = new FromData()
 
-    form.append('my_file', fs.createReadStream(path.resolve(__dirname, '..', 'uploads', req.file.originalname)));
+    form.append('my_file', fs.createReadStream(path.resolve(__dirname, '..', 'uploads', req.file.originalname)))
 
     axios.post('http://lis.leega.com.br/Emissor/3/TipoDocumento/3/Upload/1', form, {
         headers: {
@@ -100,7 +100,7 @@ app.post('/upload-servicefile', upload.single('serviceFile'), (req, res) => {
 
     const form = new FromData()
 
-    form.append('my_file', fs.createReadStream(path.resolve(__dirname, '..', 'uploads', req.file.originalname)));
+    form.append('my_file', fs.createReadStream(path.resolve(__dirname, '..', 'uploads', req.file.originalname)))
 
     axios.post('http://lis.leega.com.br/Emissor/1/TipoDocumento/5/Upload/1', form, {
         headers: {
@@ -121,16 +121,16 @@ app.post('/receive-data', (req, res) => {
 
     async function main(){
 
-        const uri = process.env.MONGODB_URI;
+        const uri = process.env.MONGODB_URI
 
-        const client = new MongoClient(uri);
+        const client = new MongoClient(uri)
     
         try {
-            await client.connect();
+            await client.connect()
     
             const result = await createData(client,
                 req.body
-            );
+            )
 
             res.send(result)
 
@@ -138,16 +138,16 @@ app.post('/receive-data', (req, res) => {
            
         } finally {
             // Close the connection to the MongoDB cluster
-            await client.close();
+            await client.close()
         }
     }
     
-    main().catch(console.error);
+    main().catch(console.error)
     
 
     async function createData(client, newListing){
-        const result = await client.db("readData").collection(newListing.layoutName).insertOne(newListing);
-        console.log(`Created id: ${result.insertedId}`);
+        const result = await client.db("readData").collection(newListing.layoutName).insertOne(newListing)
+        console.log(`Created id: ${result.insertedId}`)
     }
 
 })
@@ -157,16 +157,16 @@ app.post('/receive-vivo-data', (req, res) => {
 
     async function main(){
 
-        const uri = process.env.MONGODB_URI;
+        const uri = process.env.MONGODB_URI
 
-        const client = new MongoClient(uri);
+        const client = new MongoClient(uri)
     
         try {
-            await client.connect();
+            await client.connect()
     
             const result = await createData(client,
                 req.body
-            );
+            )
 
             res.send(result)
 
@@ -174,18 +174,74 @@ app.post('/receive-vivo-data', (req, res) => {
            
         } finally {
             // Close the connection to the MongoDB cluster
-            await client.close();
+            await client.close()
         }
     }
     
-    main().catch(console.error);
+    main().catch(console.error)
     
 
     async function createData(client, newListing){
-        const result = await client.db("readData").collection(newListing.documentName).insertOne(newListing);
-        console.log(`Created id: ${result.insertedId}`);
+        const result = await client.db("readData").collection(newListing.documentName).insertOne(newListing)
+        console.log(`Created id: ${result.insertedId}`)
     }
 
+})
+
+app.get('/get-data', async (req, res) => {
+    
+    const uri = process.env.MONGODB_URI
+    const client = new MongoClient(uri);
+
+    await client.connect()
+
+    const db = client.db('readData')
+    const collection = db.collection(req.body.documentName)
+    
+    collection.find({}).toArray((err, data) => {     
+
+        const result = data.map(item => {
+            
+            const fields = item.results.fields
+            let fieldsResult = {}
+            for (const key in fields) {
+                if (Object.hasOwnProperty.call(fields, key)) {
+                    
+                    if (key != "@odata.type") {
+                        const element = fields[key];
+                        fieldsResult[key] = element.valueText
+                    }
+                    
+                }
+            }
+
+            const itemsTable = item.results.items
+            let itemsTableResult = itemsTable.map(itemTable => {
+                const fields = itemTable.fields
+                let fieldsResult = {}
+                for (const key in fields) {
+                    if (Object.hasOwnProperty.call(fields, key)) {
+                        
+                        if (key != "@odata.type") {
+                            const element = fields[key];
+                            fieldsResult[key] = element.valueText
+                        }
+                        
+                    }
+                }
+                return {
+                    fields: fieldsResult
+                }
+            })
+
+            return { fields: fieldsResult, table: itemsTableResult}
+        })
+
+        res.json(result)
+        client.close()
+    })
+    
+    
 })
 
 const PORT = process.env.PORT || 5000
