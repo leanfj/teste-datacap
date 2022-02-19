@@ -6,7 +6,11 @@ const axios = require('axios')
 const path = require('path')
 const FromData = require('form-data')
 const fs = require('fs')
-const {MongoClient} = require('mongodb')
+const { MongoClient } = require('mongodb')
+
+
+const { FormRecognizerClient, AzureKeyCredential } = require("@azure/ai-form-recognizer");
+
 
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
@@ -117,6 +121,62 @@ app.post('/upload-servicefile', upload.single('serviceFile'), (req, res) => {
 
 })
 
+app.post('/upload-vivo', upload.single('serviceFile'), async (req, res) => {
+    const endpoint = "https://vivo.cognitiveservices.azure.com/";
+    const apiKey = "abf7c6975a584c0b9ffc46070370cd00";
+    const modelId = "1461b08f-c2ed-4d63-820a-e493d2402cd6";
+
+    let fileStream = fs.createReadStream(path.resolve(__dirname, '..', 'uploads', req.file.originalname))
+
+    const client = new FormRecognizerClient(
+        endpoint,
+        new AzureKeyCredential(apiKey)
+    )
+
+    const poller = await client.beginRecognizeCustomForms(modelId, fileStream, {
+        contentType: "application/pdf",
+        onProgress: (state) => {
+          console.log(`status: ${state.status}`);
+        },
+      }); 
+
+    const forms = await poller.pollUntilDone()
+
+    fs.unlink(path.resolve(__dirname, '..', 'uploads', req.file.originalname), (err) => {
+        console.log('File removed')
+    })
+
+    async function main(){
+
+        const uri = process.env.MONGODB_URI
+
+        const client = new MongoClient(uri)
+    
+        try {
+            await client.connect()
+    
+            const result = await createData(client,
+                forms
+            )
+
+            res.send(result)
+           
+        } finally {
+            // Close the connection to the MongoDB cluster
+            await client.close()
+        }
+    }
+    
+    main().catch(console.error)    
+
+    async function createData(client, newListing){
+        const result = await client.db("readData").collection("VIVO_formRecognizer").insertOne(forms)
+        console.log(`Created id: ${result.insertedId}`)
+    }
+
+
+})
+
 app.post('/receive-data', (req, res) => {
 
     async function main(){
@@ -151,7 +211,6 @@ app.post('/receive-data', (req, res) => {
     }
 
 })
-
 
 app.post('/receive-vivo-data', (req, res) => {
 

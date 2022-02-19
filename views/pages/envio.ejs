@@ -32,6 +32,16 @@
                         </button>
                     </div>
                 </form>
+                <hr>
+                <form action="/upload-vivo" method="POST" enctype="multipart/form-data" id="formServiceFile">
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="inputServiceFile" name="serviceFile">
+                        <label class="input-group-text" for="inputGroupFile01">VIVO FormRecognizer</label>
+                        <button type="submit" class="btn btn-primary">
+                            Enviar
+                        </button>
+                    </div>
+                </form>
             </div>
             <div class="row" id="result">
                 <a href="/consulta-envio?trackingcode=<%= data %>"> <%= data %></a>
